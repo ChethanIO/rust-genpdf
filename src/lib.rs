@@ -659,6 +659,16 @@ impl Document {
         self.style.set_line_spacing(line_spacing);
     }
 
+    /// Sets the page offset used when rendering page numbers.
+    ///
+    /// This is useful when generating multiple documents separately and
+    /// merging them later; you can set how many pages came before this
+    /// document so that placeholders like `#{page}` resolve to a
+    /// global page number.
+    pub fn set_page_offset(&mut self, offset: usize) {
+        self.context.page_offset = offset;
+    }
+
     /// Sets the paper size for all pages of this document.
     ///
     /// If this method is not called, the default size [`A4`][] is used.
@@ -1318,6 +1328,7 @@ pub trait Element {
 pub struct Context {
     /// The page number of the current page.
     pub page_number: usize,
+    pub page_offset: usize,
     /// The font cache for this rendering process.
     pub font_cache: fonts::FontCache,
     /// The hyphenator to use for hyphenation.
@@ -1335,12 +1346,15 @@ impl Context {
         Context {
             font_cache,
             page_number: 0,
+            page_offset: 0,
         }
     }
 
     #[cfg(feature = "hyphenation")]
     fn new(font_cache: fonts::FontCache) -> Context {
         Context {
+            page_number: 0,
+            page_offset: 0,
             font_cache,
             hyphenator: None,
         }
