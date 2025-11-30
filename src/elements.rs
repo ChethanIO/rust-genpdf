@@ -454,6 +454,8 @@ fn replace_page_number(
         s = s.replace("\n", "");
         if s.contains(&"#{page}") {
           let page = context.page_offset + context.page_number;
+            println!("DEBUG replace_page_number: page_offset={}, page_number={}, final_page={}", 
+                     context.page_offset, context.page_number, page);
             s = s.replace(&"#{page}", &page.to_string());
         }
         words_copy[i].s = s.into();

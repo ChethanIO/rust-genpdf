@@ -940,6 +940,9 @@ impl PageDecorator for SimplePageDecorator {
     ) -> Result<render::Area<'a>, error::Error> {
         self.page += 1;
         context.page_number = self.page;
+        println!("DEBUG: page_offset={}, page_number={}, final_page={}", 
+                 context.page_offset, context.page_number, 
+                 context.page_offset + context.page_number);
         if let Some(margins) = self.margins {
             area.add_margins(margins);
         }
@@ -1328,6 +1331,7 @@ pub trait Element {
 pub struct Context {
     /// The page number of the current page.
     pub page_number: usize,
+    /// The number of pages that came before this document. Used for continuous page numbering when merging documents.
     pub page_offset: usize,
     /// The font cache for this rendering process.
     pub font_cache: fonts::FontCache,
