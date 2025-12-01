@@ -789,12 +789,13 @@ impl Document {
         self.root.push(element);
     }
 
-    /// Renders this document into a PDF file and writes it to the given writer.
+    /// Renders this document and writes the result to the given writer.
     ///
-    /// The given writer is always wrapped in a buffered writer.  For details on the rendering
-    /// process, see the [Rendering Process section of the crate
+    /// For details on the rendering process, see the [Rendering Process section of the crate
     /// documentation](index.html#rendering-process).
-    pub fn render(mut self, w: impl io::Write) -> Result<(), error::Error> {
+    /// 
+    /// Returns the number of pages rendered.
+    pub fn render(mut self, w: impl io::Write) -> Result<usize, error::Error> {
         let mut renderer = render::Renderer::new(self.paper_size, &self.title)?;
         if let Some(conformance) = self.conformance {
             renderer = renderer.with_conformance(conformance);
@@ -824,7 +825,10 @@ impl Document {
                 break;
             }
         }
-        renderer.write(w)
+        renderer.write(w)?;
+        
+        // Return the page count from the context
+        Ok(self.context.page_number)
     }
 
     /// Renders this document into a PDF file at the given path.
@@ -833,7 +837,9 @@ impl Document {
     ///
     /// For details on the rendering process, see the [Rendering Process section of the crate
     /// documentation](index.html#rendering-process).
-    pub fn render_to_file(self, path: impl AsRef<path::Path>) -> Result<(), error::Error> {
+    /// 
+    /// Returns the number of pages rendered.
+    pub fn render_to_file(self, path: impl AsRef<path::Path>) -> Result<usize, error::Error> {
         let path = path.as_ref();
         let file = fs::File::create(path)
             .with_context(|| format!("Could not create file {}", path.display()))?;
