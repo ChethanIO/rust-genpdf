@@ -669,6 +669,14 @@ impl Document {
         self.context.page_offset = offset;
     }
 
+    /// Gets the current page count from the rendering context.
+    ///
+    /// Returns the number of pages that have been rendered so far.
+    /// This can be used to track page counts without reading PDF files.
+    pub fn get_current_page_count(&self) -> usize {
+        self.context.page_number
+    }
+
     /// Sets the paper size for all pages of this document.
     ///
     /// If this method is not called, the default size [`A4`][] is used.
